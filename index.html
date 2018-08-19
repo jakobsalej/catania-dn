@@ -1,0 +1,84 @@
+<!doctype html>
+<html ng-app="formApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+    <script src="formApp.js"></script>
+    <link rel="stylesheet" href="form.css">
+  </head>
+  <body class="background">
+    <div ng-controller="emailFormController as vm">
+      
+      <form class="email-form">
+        <h1 class="form-title">{{ ::vm.testData.subject }}</h1>
+        <hr class="form-divider MB-0">
+        <p class="form-subtitle MT-6 MB-0">Share email with your teammates</p>
+        
+        <!-- chips for selected users -->
+        <div class="select-users">
+          <span class="form-selected VP-8 MR-4 MT-10" ng-repeat="user in vm.selectedUsers track by $index">
+            {{ user.name }}
+            <b class="mouse-pointer" ng-click="vm.removeUser($index)"> &#10005;</b>
+          </span>
+          <input 
+            type="text"
+            ng-model="vm.userInput"
+            class="form-input MT-10"
+            placeholder="Type name or email"
+            ng-focus="vm.showSelector=true"
+            ng-blur="vm.onBlur()"
+          >
+        </div>
+        <hr class="form-divider MB-0 MT-6">
+
+        <!-- dropdown menu -->
+        <div class="dropdown-menu" ng-show="vm.showSelector">
+          <div
+            class="VP-8 HP-20"
+            ng-repeat="user in vm.availableUsers | filter: vm.userInput | orderBy:'name'"
+            ng-click="vm.addUser(user, $index)"
+            ng-if="!vm.alreadyAdded(user)"
+          >
+            <p class="dropdown-name MB-0 MT-0">{{ user.name }}</p>
+            <p class="dropdown-email MB-0 MT-2">{{ user.email }}</p>
+          </div>
+          <p ng-if="vm.availableUsers.length == 0" class="dropdown-email HP-20">No teammates available.</p>
+        </div>
+
+        <!-- email info -->
+        <div class="form-email MT-30">
+          <span class="email-sender">{{ ::vm.testData.sender.name }}</span>
+          <span class="form-subtitle text-right">{{ ::vm.testData.timeReceived | date : "HH:mm" }}</span>
+          <div class="form-subtitle">
+            <span>to</span>
+            <span ng-repeat="recipient in vm.testData.recipients">
+              <span ng-if="!$last">{{ ::recipient.name }},</span>
+              <span ng-if="$last">{{ ::recipient.name }}</span>
+            </span>
+            <span class="text-right number-border">{{ ::vm.testData.noOfEmails }}</span>
+          </div>
+          <p class="email-body MB-8">{{ ::vm.testData.text }}</p>
+        </div>
+
+        <!-- user's comment -->
+        <div class="comment-box MT-10">
+          <input
+            type="text"
+            ng-model="vm.userComment"
+            class="form-input user-comment"
+            placeholder="Add a comment..."
+          >
+        </div>
+
+        <!-- share button -->
+        <button
+          type="button"
+          class="submit-button MT-10"
+          ng-click="vm.submitForm()"
+          ng-disabled="vm.selectedUsers.length === 0"
+        >
+          Share
+        </button>
+      </form>
+    </div>
+  </body>
+</html>
